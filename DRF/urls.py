@@ -1,7 +1,10 @@
 from django.urls import path, include
-from .views import CountryAddApiView, CountryViewApiView
+from .views import CountryViewSet
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r'', CountryViewSet)
 
 urlpatterns = [
-    path('', CountryAddApiView.as_view()),
-    path('<int:country_id>/', CountryViewApiView.as_view()),
+    path('', include(router.urls)),
 ]
