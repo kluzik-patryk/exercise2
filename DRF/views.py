@@ -1,4 +1,3 @@
-from .models import Country
 from .serializers import CountrySerializer
 from .models import Country
 from rest_framework import viewsets
