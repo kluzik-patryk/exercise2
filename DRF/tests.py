@@ -1,6 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
 from .models import Country
+from .serializers import CountrySerializer
 
 
 ##### Functional tests  #####
@@ -8,7 +9,18 @@ class CountryTest(TestCase):
 
     def setUp(self) -> None:
         self.client = APIClient()
-        self.country = Country.objects.create(country_name="Poland", spoken_language="Polish", population=38_000_000)
+        self.country_attribs = {
+            "country_name": "Poland",
+            "spoken_language": "Polish",
+            "population": 38_000_000,
+        }
+        self.serializer_attribs = {
+            "country_name": "France",
+            "spoken_language": "French",
+            "population": 67_390_000,
+        }
+        self.country = Country.objects.create(**self.country_attribs)
+        self.serializer = CountrySerializer(instance=self.country)
 
     def test_incorrect_endpoint(self):
         response = self.client.get('/wrong_endpoint/', format="json")
@@ -54,7 +66,25 @@ class CountryTest(TestCase):
         self.assertEqual(self.country.__str__(), "Poland")
 
     def test_model_wrong_data(self):
-        self.assertRaises(ValueError, lambda: Country.objects.create(country_name="Japan",
-                                                                     spoken_language="Japanese",
-                                                                     population="a lot")
+        self.assertRaises(ValueError,
+                          lambda: Country.objects.create(
+                              country_name="Japan",
+                              spoken_language="Japanese",
+                              population="a lot")
                           )
+
+    def test_serializer_contains_expected_fields(self):
+        data = self.serializer.data
+        self.assertCountEqual(data.keys(), ['country_name', 'spoken_language', 'population'])
+
+    def test_country_name_field_content(self):
+        data = self.serializer.data
+        self.assertEqual(data["country_name"], self.country_attribs["country_name"])
+
+    def test_population_field(self):
+        self.serializer_attribs['population'] = 30_000_894.42
+
+        serializer = CountrySerializer(data=self.serializer_attribs)
+
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(set(serializer.errors), {'population'})
