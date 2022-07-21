@@ -48,8 +48,13 @@ class CountryTest(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertRaises(KeyError, lambda: response.data["country_name"])
 
-
-#### UNIT TESTS ####
+    #### UNIT TESTS ####
 
     def test_model_helper(self):
         self.assertEqual(self.country.__str__(), "Poland")
+
+    def test_model_wrong_data(self):
+        self.assertRaises(ValueError, lambda: Country.objects.create(country_name="Japan",
+                                                                     spoken_language="Japanese",
+                                                                     population="a lot")
+                          )
