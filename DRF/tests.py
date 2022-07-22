@@ -65,6 +65,24 @@ class CountryTest(TestCase):
     def test_model_helper(self):
         self.assertEqual(self.country.__str__(), "Poland")
 
+    def test_model_saving_and_retrieving_countries(self):
+        saved_countries = Country.objects.all()
+        self.assertEqual(saved_countries.count(), 1)
+
+        new_country = Country()
+        new_country.country_name = "Germany"
+        new_country.spoken_language = "German"
+        new_country.population = 80_000_000
+        new_country.save()
+
+        saved_countries = Country.objects.all()
+        self.assertEqual(saved_countries.count(), 2)
+
+        first_saved_country = saved_countries[0]
+        second_saved_country = saved_countries[1]
+        self.assertEqual(first_saved_country.country_name, 'Poland')
+        self.assertEqual(second_saved_country.country_name, 'Germany')
+
     def test_model_wrong_data(self):
         self.assertRaises(ValueError,
                           lambda: Country.objects.create(
