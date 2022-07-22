@@ -69,13 +69,9 @@ class CountryTest(TestCase):
         saved_countries = Country.objects.all()
         self.assertEqual(saved_countries.count(), 1)
 
-        new_country = Country()
-        new_country.country_name = "Germany"
-        new_country.spoken_language = "German"
-        new_country.population = 80_000_000
-        new_country.save()
+        Country.objects.create(country_name="Germany", spoken_language="German", population=80_000_000)
 
-        saved_countries = Country.objects.all()
+        # saved_countries = Country.objects.all()
         self.assertEqual(saved_countries.count(), 2)
 
         first_saved_country = saved_countries[0]
